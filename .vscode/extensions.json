@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
+        "ms-vscode.vscode-node-azure-pack",
+        "ms-vscode-remote.remote-wsl",
+        "ms-azuretools.vscode-azure-mcp-server",
+        "redhat.vscode-yaml",
+        "ms-azuretools.vscode-docker"
+    ]
+}
