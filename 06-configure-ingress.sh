@@ -11,7 +11,7 @@ set -eou pipefail
 
 # Apply ingress resource with DNS label substitution
 echo "Creating ingress resource..."
-envsubst < 07-ingress.yaml | kubectl apply -f -
+envsubst < 06-ingress.yaml | kubectl apply -f -
 
 # Wait for ingress to be configured
 echo "Waiting for ingress to be configured..."

@@ -4,23 +4,20 @@ set -eou pipefail
 echo "## Step 1: Creating AKS cluster..."
 ./01-create-aks.sh
 
-echo "## Step 2: Configuring web..."
-./02-web.sh
+echo "## Step 2: Configuring the generic planet..."
+./02-planet.sh
 
-echo "## Step 3: Deploying LoadBalancer service..."
-./03-loadbalancer.sh
+echo "## Step 3: Deploying Mars service..."
+./03-mars.sh
 
-echo "## Step 4: Deploying Mars service..."
-./04-mars.sh
+echo "## Step 4: Deploying Jupiter service..."
+./04-jupiter.sh
 
-echo "## Step 5: Deploying Jupiter service..."
-./05-jupiter.sh
+echo "## Step 5: Installing Ingress Controller..."
+./05-install-ingress.sh
 
-echo "## Step 6: Installing Ingress Controller..."
-./06-install-ingress.sh
+echo "## Step 6: Configuring Ingress routes..."
+./06-configure-ingress.sh
 
-echo "## Step 7: Configuring Ingress routes..."
-./07-configure-ingress.sh
-
-echo "## Step 8: Verifying Ingress endpoints..."
-./08-verify-ingress.sh
+echo "## Step 7: Verifying Ingress endpoints..."
+./07-verify-ingress.sh

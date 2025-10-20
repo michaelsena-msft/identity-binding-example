@@ -2,7 +2,7 @@
 set -eou pipefail
 . ./.env
 
-k apply -f 04-mars.yaml
+k apply -f 03-mars.yaml
 
 k -n web rollout status deploy/mars --timeout=120s
 k -n web get pods -l app=mars -o wide

@@ -9,10 +9,10 @@ k delete --ignore-not-found=true --wait=true --now=true svc nginx -n web
 curl -o ingress-nginx.yaml https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.13.3/deploy/static/provider/cloud/deploy.yaml
 
 # Apply the patch to have an Azure entry point.
-patch -i 06-ingress-nginx.patch ingress-nginx.yaml
+patch -i 05-ingress-nginx.patch ingress-nginx.yaml
 
 # Apply ingress-nginx manifest with DNS label substitution
-envsubst < 06-ingress-nginx.yaml | k apply -f -
+envsubst < 05-ingress-nginx.yaml | k apply -f -
 
 # Wait for ingress-nginx deployment to be ready
 echo "Waiting for ingress-nginx-controller deployment..."
