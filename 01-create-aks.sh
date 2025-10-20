@@ -5,6 +5,7 @@ set -eou pipefail
 az group create -n "$RG" -l "$LOC"
 
 az acr create --admin-enabled true --sku standard -g "$RG" -l "$LOC" -n "$ACR_NAME"
+az acr login -g "$RG" -n "$ACR_NAME"
 
 az aks create \
   -g "$RG" -n "$CLUSTER" \
