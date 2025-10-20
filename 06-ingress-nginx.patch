@@ -1,0 +1,12 @@
+*** ingress-nginx.yaml.patched	2025-10-20 12:15:20.575174682 +1100
+--- ingress-nginx.yaml	2025-10-20 12:15:37.956587759 +1100
+*************** apiVersion: v1
+*** 336,341 ****
+--- 336,342 ----
+  kind: Service
+  metadata:
+    labels:
++     service.beta.kubernetes.io/azure-dns-label-name: "${DNS_LABEL}"
+      app.kubernetes.io/component: controller
+      app.kubernetes.io/instance: ingress-nginx
+      app.kubernetes.io/name: ingress-nginx
