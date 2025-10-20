@@ -5,7 +5,6 @@ set -eou pipefail
 az group create -n "$RG" -l "$LOC"
 
 az acr create --admin-enabled true --sku standard -g "$RG" -l "$LOC" -n "$ACR_NAME"
-az acr login -g "$RG" -n "$ACR_NAME"
 
 az aks create \
   -g "$RG" -n "$CLUSTER" \
@@ -18,8 +17,8 @@ az aks create \
 # Verify
 az aks show -g "$RG" -n "$CLUSTER" --query "provisioningState" -o tsv | grep -x Succeeded
 
-# Configure kubeconfig
-az aks get-credentials -g "$RG" -n "$CLUSTER" --overwrite-existing
-
 # Verify cluster reachable
 k get nodes -o wide
+
+# Setup environment.
+./local-env.sh
