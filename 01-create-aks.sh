@@ -2,13 +2,13 @@
 set -eou pipefail
 [ -f ./.env ] && . ./.env || . ../.env
 
-log "Creating the resource group..."
+log Creating the resource group...
 az group create -n "$RESOURCE_GROUP" -l "$REGION"
 
-log "Creating the ACR..."
+log Creating the ACR...
 az acr create --admin-enabled true --sku standard -g "$RESOURCE_GROUP" -l "$REGION" -n "$ACR_NAME"
 
-log "Creating the cluster..."
+log Creating the cluster...
 az aks create \
   -g "$RESOURCE_GROUP" -n "$CLUSTER" \
   --location "$REGION" \
