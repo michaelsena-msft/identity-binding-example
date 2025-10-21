@@ -11,4 +11,4 @@ k config unset "users.clusterUser_${RG}_${CLUSTER}" || true
 docker logout ${ACR_FQDN}
 
 # Add --no-wait if you really want.
-az group delete -n "$RG" --yes $@
+az group delete -n "$RESOURCE_GROUP" --yes $@
