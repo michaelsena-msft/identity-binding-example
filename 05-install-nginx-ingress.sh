@@ -2,20 +2,17 @@
 set -eou pipefail
 [ -f ./.env ] && . ./.env || . ../.env
 
-# Delete the existing load balancer if it exists.
-k delete --ignore-not-found=true --wait=true --now=true svc nginx -n web
+# Note: Helm must be v3.18.4 (see: https://docs.nginx.com/nginx-ingress-controller/installation/installing-nic/installation-with-helm/#before-you-begin)
+# Or install...
+helm upgrade --create-namespace nginx-ingress-release oci://ghcr.io/nginx/charts/nginx-ingress --version 2.3.1 \
+  --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-dns-label-name"="${DNS_LABEL}"
 
-# Retrieve the ingress-nginx YAML
-./operations/configure.sh
-
-# Apply ingress-nginx manifest with DNS label substitution
-./operations/apply.sh
-
+ k apply -f https://raw.githubusercontent.com/nginx/kubernetes-ingress/v5.2.1/deploy/crds.yaml
 
 # Wait for external IP
 log Waiting for external IP
 for i in $(seq 1 60); do
-  EXTERNAL_IP="$(k -n ingress-nginx get svc/ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}' || true)"
+  EXTERNAL_IP="$(k -n default get svc/nginx-ingress-release-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}' || true)"
   [ -n "${EXTERNAL_IP:-}" ] && break
   sleep 5
 done

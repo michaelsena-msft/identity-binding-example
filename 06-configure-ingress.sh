@@ -13,6 +13,3 @@ sleep 5
 # Show ingress status
 log Ingress status:
 kubectl get ingress -n web
-
-# Verify Ingress is working
-./operations/verify.sh

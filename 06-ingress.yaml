@@ -1,34 +1,27 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: virtualservers.k8s.nginx.org
+kind: VirtualServer
 metadata:
-  name: web-ingress
-  namespace: web
-  annotations:
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  name: nginx-test
 spec:
+  host: ${FQDN}
   ingressClassName: nginx
-  rules:
-    - http:
-        paths:
-          - path: /jupiter
-            pathType: Prefix
-            backend:
-              service:
-                name: jupiter
-                port:
-                  number: 80
-          - path: /mars
-            pathType: Prefix
-            backend:
-              service:
-                name: mars
-                port:
-                  number: 80
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: planet
-                port:
-                  number: 80
+  upstreams:
+  - name: mars
+    service: mars-svc
+    port: 80
+  - name: jupiter
+    service: jupiter-svc
+    port: 80
+  - name: planet
+    service: planet-svc
+    port: 80
+  routes:
+  - path: /mars
+    action:
+      pass: mars
+  - path: /jupiter
+    action:
+      pass: jupiter
+  - path: /
+    action:
+      pass: planet;
