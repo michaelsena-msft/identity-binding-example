@@ -1,6 +1,5 @@
 #!/bin/sh
 set -eou pipefail
-. ./.env
 
 # Download the Azure ingress-nginx deployment (see: https://kubernetes.github.io/ingress-nginx/deploy/#azure)
 curl -o ingress-nginx.yaml https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.13.3/deploy/static/provider/cloud/deploy.yaml
@@ -11,8 +10,8 @@ curl -o ingress-nginx.yaml https://raw.githubusercontent.com/kubernetes/ingress-
 #diff -U 5 ingress-nginx.yaml.unpatched ingress-nginx.yaml
 
 # Apply the patch to have an Azure entry point.
-patch -i ./patches/ingress-nginx.add-dns-label.patch ingress-nginx.yaml --no-backup-if-mismatch
+patch -i "${ROOT_DIR}/patches/add-dns-label.patch" ingress-nginx.yaml --no-backup-if-mismatch
 
 if [ "$#" -eq 1 ]; then
-    IMAGE=${1} envsubst < ./patches/ingress-nginx.controller-image.patch | patch ingress-nginx.yaml --no-backup-if-mismatch
+    IMAGE=${1} envsubst < "${ROOT_DIR}/patches/controller-image.patch" | patch ingress-nginx.yaml --no-backup-if-mismatch
 fi

@@ -14,10 +14,7 @@ echo "## Step 4: Deploying Jupiter service..."
 ./04-jupiter.sh
 
 echo "## Step 5: Installing Ingress Controller..."
-./05-install-ingress.sh
+./05-install-ingress-nginx.sh
 
 echo "## Step 6: Configuring Ingress routes..."
 ./06-configure-ingress.sh
-
-echo "## Step 7: Verifying Ingress endpoints..."
-./07-verify-ingress.sh

@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eou pipefail
-. ./.env
+[ -f ./.env ] && . ./.env || . ../.env
 
 k apply -f 02-planet.yaml
 

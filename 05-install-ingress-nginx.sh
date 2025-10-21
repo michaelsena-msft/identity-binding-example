@@ -1,19 +1,16 @@
 #!/bin/sh
 set -eou pipefail
-. ./.env
+[ -f ./.env ] && . ./.env || . ../.env
 
 # Delete the existing load balancer if it exists.
 k delete --ignore-not-found=true --wait=true --now=true svc nginx -n web
 
 # Retrieve the ingress-nginx YAML
-./configure-ingress-yaml.sh
+./operations/configure.sh
 
 # Apply ingress-nginx manifest with DNS label substitution
-envsubst < ingress-nginx.yaml | k apply -f -
+./operations/apply.sh
 
-# Wait for ingress-nginx deployment to be ready
-echo "Waiting for ingress-nginx-controller deployment..."
-k -n ingress-nginx rollout status deploy/ingress-nginx-controller --timeout=300s
 
 # Wait for external IP
 echo "Waiting for external IP..."
