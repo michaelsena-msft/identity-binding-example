@@ -6,7 +6,7 @@ log Creating the resource group...
 az group create -n "$RESOURCE_GROUP" -l "$REGION"
 
 log Creating the ACR...
-az acr create --admin-enabled true --sku standard -g "$RESOURCE_GROUP" -l "$REGION" -n "$ACR_NAME"
+az acr create --admin-enabled true --sku standard -g "$RESOURCE_GROUP" -l "$REGION" -n "$ACR_NAME" --only-show-errors
 
 log Creating the cluster...
 az aks create \
@@ -15,7 +15,8 @@ az aks create \
   --enable-managed-identity \
   --node-count 1 \
   --node-vm-size Standard_D4s_v3 \
-  --attach-acr $ACR_NAME
+  --attach-acr $ACR_NAME \
+  --only-show-errors
 
 # Setup environment.
 ./local-env.sh
