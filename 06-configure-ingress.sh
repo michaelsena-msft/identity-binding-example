@@ -10,6 +10,11 @@ envsubst < 06-ingress.yaml | kubectl apply -f -
 log Waiting for ingress to be configured
 sleep 5
 
+log Checking ${FQDN}
+
 # Show ingress status
 log Ingress status:
 kubectl get ingress -n web
+
+# Verify ingress routes
+./operations/verify.sh

@@ -4,13 +4,14 @@ set -eou pipefail
 
 # Note: Helm must be v3.18.4 (see: https://docs.nginx.com/nginx-ingress-controller/installation/installing-nic/installation-with-helm/#before-you-begin)
 # Or install...
-log Checking Helm installation
-[ $(helm list --filter nginx-ingress-release | wc -l) -eq 2 ] && operation=upgrade || operation=install
-
-log Performing Helm $operation
-helm ${operation} \
-  --create-namespace nginx-ingress-release \
-  oci://ghcr.io/nginx/charts/nginx-ingress --version 2.3.1 \
+log Performing Helm
+helm upgrade nginx-ingress-release oci://ghcr.io/nginx/charts/nginx-ingress \
+  --version 2.3.1 \
+  --create-namespace \
+  --atomic \
+  --enable-dns \
+  --dependency-update \
+  --install \
   --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-dns-label-name"="${DNS_LABEL}"
 
 #log Upgrading CRDs
@@ -33,7 +34,7 @@ for i in $(seq 1 60); do
   echo "$RESOLVED_IPS" | grep -q "$EXTERNAL_IP" && break
   sleep 5
 done
-info "$RESOLVED_IPS" | grep -q "$EXTERNAL_IP"
+info $RESOLVED_IPS
 
 # Verify ingress controller is responding
 log Verifying ingress controller

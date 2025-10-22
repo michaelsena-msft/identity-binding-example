@@ -1,27 +1,24 @@
-apiVersion: virtualservers.k8s.nginx.org
+apiVersion: k8s.nginx.org/v1
 kind: VirtualServer
 metadata:
   name: nginx-test
+  namespace: web
 spec:
-  host: ${FQDN}
-  ingressClassName: nginx
+  host: sena-ingressnginx.australiaeast.cloudapp.azure.com
   upstreams:
-  - name: mars
-    service: mars-svc
-    port: 80
-  - name: jupiter
-    service: jupiter-svc
-    port: 80
-  - name: planet
-    service: planet-svc
-    port: 80
+    - { name: mars, service: mars-svc, port: 80 }
+    - { name: jupiter, service: jupiter-svc, port: 80 }
+    - { name: planet, service: planet-svc, port: 80 }
   routes:
-  - path: /mars
-    action:
-      pass: mars
-  - path: /jupiter
-    action:
-      pass: jupiter
-  - path: /
-    action:
-      pass: planet;
+    - path: /
+      action: { pass: planet }
+    - path: /mars
+      action:
+        proxy:
+          upstream: mars
+          rewritePath: /
+    - path: /jupiter
+      action:
+        proxy:
+          upstream: jupiter
+          rewritePath: /
