@@ -6,6 +6,6 @@ log Creating ingress resource
 envsubst < 06-${MODE}.yaml | kubectl apply -f -
 
 log Sleeping to allow Ingress to be configured
-sleep 10
+sleep 5
 
 ./operations/verify.sh

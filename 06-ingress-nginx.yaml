@@ -15,20 +15,20 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: jupiter
+                name: jupiter-svc
                 port:
                   number: 80
           - path: /mars
             pathType: Prefix
             backend:
               service:
-                name: mars
+                name: mars-svc
                 port:
                   number: 80
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: planet
+                name: planet-svc
                 port:
                   number: 80
