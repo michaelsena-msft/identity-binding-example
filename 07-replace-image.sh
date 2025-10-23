@@ -3,7 +3,7 @@ set -eou pipefail
 [ -f ./.env ] && . ./.env || . ../.env
 
 if [ "${MODE}" = "ingress-nginx" ]; then
-    DEFAULT_LABEL=$(grep -o '^-\W\+image:.*$' ./patches/controller-image.patch | awk '{print $3}')
+    DEFAULT_LABEL=${DEFAULT_INGRESS_NGINX_LABEL}
     ALT_LABEL=$(echo ${DEFAULT_LABEL} | sed -e "s/registry.k8s.io/${ACR_FQDN}/g; s/@.\+//g")
 elif [ "${MODE}" = "nginx-ingress" ]; then
     DEFAULT_LABEL="${DEFAULT_NGINX_INGRESS_REPOSITORY}:${DEFAULT_NGINX_INGRESS_TAG}"

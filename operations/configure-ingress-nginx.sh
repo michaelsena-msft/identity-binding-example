@@ -16,9 +16,12 @@ log Patching Ingress NGINX YAML
 # Apply the patch to have an Azure entry point.
 patch -i "${ROOT_DIR}/patches/add-dns-label.patch" "${INGRESS_NGINX_YAML}" --no-backup-if-mismatch
 
-if [ "$#" -eq 1 ]; then
-    IMAGE=${1} envsubst < "${ROOT_DIR}/patches/controller-image.patch" | patch "${INGRESS_NGINX_YAML}" --no-backup-if-mismatch
-fi
+info Found: ${DEFAULT_INGRESS_NGINX_LABEL}
+LABEL=${1:-}
+[ -z "$LABEL" ] && LABEL="${DEFAULT_INGRESS_NGINX_LABEL}"
+
+log Patching Ingress NGINX to use image: ${LABEL}
+IMAGE=${LABEL} PULL_POLICY=Always envsubst < "${ROOT_DIR}/patches/controller-image.patch" | patch "${INGRESS_NGINX_YAML}" --no-backup-if-mismatch
 
 log Applying ingress-nginx
 # Apply ingress-nginx manifest with DNS label substitution
