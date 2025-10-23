@@ -14,8 +14,8 @@ log -- Step 3: Deploying Mars service
 log -- Step 4: Deploying Jupiter service
 ./04-jupiter.sh
 
-log -- Step 5: Installing ${MODE}
-./05-${MODE}-ingress.sh
+log -- Step 5: Installing Ingress (mode: ${MODE})
+./05-install-ingress.sh
 
 log -- Step 6: Configuring Ingress routes
 ./06-configure-ingress.sh
