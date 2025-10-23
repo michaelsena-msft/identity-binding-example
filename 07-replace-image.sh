@@ -10,17 +10,13 @@ elif [ "${MODE}" = "nginx-ingress" ]; then
     ALT_LABEL=${ACR_FQDN}/${DEFAULT_NGINX_INGRESS_REPOSITORY}:${DEFAULT_NGINX_INGRESS_TAG}
 fi
 
-log Pull and tagging image
-info DEFAULT_LABEL:  ${DEFAULT_LABEL}
-info ALT_LABEL:      ${ALT_LABEL}
-
 log Pulling default image ${DEFAULT_LABEL}
 docker pull ${DEFAULT_LABEL}
     
-log Tagging image
+log Tagging ${DEFAULT_LABEL} as ${ALT_LABEL}
 docker tag ${DEFAULT_LABEL} ${ALT_LABEL}
     
-log Pushing
+log Pushing ${ALT_LABEL} to ACR
 docker push ${ALT_LABEL}
 
 ./operations/configure-${MODE}.sh ${ALT_LABEL}
