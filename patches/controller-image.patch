@@ -1,6 +1,6 @@
---- ingress-nginx.yaml.unpatched       2025-10-21 10:47:01.310467534 +1100
-+++ ingress-nginx.yaml 2025-10-21 10:48:03.453931591 +1100
-@@ -441,11 +442,11 @@
+--- ingress-nginx.yaml.unpatched	2025-10-23 15:49:14.232497831 +1100
++++ ingress-nginx.yaml	2025-10-23 15:49:47.620677784 +1100
+@@ -441,12 +441,12 @@
            valueFrom:
              fieldRef:
                fieldPath: metadata.namespace
@@ -14,3 +14,4 @@
            preStop:
              exec:
                command:
+               - /wait-shutdown
