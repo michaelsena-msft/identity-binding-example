@@ -1,5 +1,5 @@
---- ingress-nginx.yaml.unpatched	2025-10-23 15:49:14.232497831 +1100
-+++ ingress-nginx.yaml	2025-10-23 15:49:47.620677784 +1100
+--- ingress-nginx.yaml.unpatched	2025-10-24 10:40:53.715519027 +1100
++++ ingress-nginx.yaml	2025-10-24 10:42:30.780409208 +1100
 @@ -441,12 +441,12 @@
            valueFrom:
              fieldRef:
@@ -15,3 +15,19 @@
              exec:
                command:
                - /wait-shutdown
+@@ -491,13 +491,13 @@
+             add:
+             - NET_BIND_SERVICE
+             drop:
+             - ALL
+           readOnlyRootFilesystem: false
+-          runAsGroup: 82
++          runAsGroup: ${RUN_AS_GROUP}
+           runAsNonRoot: true
+-          runAsUser: 101
++          runAsUser: ${RUN_AS_USER}
+           seccompProfile:
+             type: RuntimeDefault
+         volumeMounts:
+         - mountPath: /usr/local/certificates/
+           name: webhook-cert

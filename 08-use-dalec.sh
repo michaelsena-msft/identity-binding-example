@@ -21,6 +21,11 @@ log Pushing ${ACR_DALEC_LABEL} to ACR
 docker push ${ACR_DALEC_LABEL}
 
 # Change to using the dalec image.
+if [ "${MODE}" = "ingress-nginx" ]; then
+    export RUN_AS_GROUP="1000"
+    export RUN_AS_USER="1000"
+fi
+
 ./operations/configure-${MODE}.sh ${ACR_DALEC_LABEL} ${DALEC_TAG} Always
 
 # Verify its still working
