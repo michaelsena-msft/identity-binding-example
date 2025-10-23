@@ -1,14 +1,21 @@
 # Basic AKS Cluster with NGINX Example
 
-## Instructions
+## Preparation
 
-1. Create a copy of `.env.sample` and name it `.env`.
-1. Fill in the required values.
-1. Run: `execute.sh`.
+```shell
+cp .env.user.sample .env.user
+vi .env.user
+```
 
-## Switching PCs
+## Usage:
 
-If working with a new PC, re-configure the local environment (e.g., `kubectl`) by running:
+```shell
+execute.sh
+```
+
+## Environment Reconfiguration
+
+To re-configure the local environment (e.g., `kubectl`) by running:
 
 ```sh
 ./local-env.sh
