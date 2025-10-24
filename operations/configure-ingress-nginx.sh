@@ -2,6 +2,11 @@
 set -eou pipefail
 [ -f ./.env ] && . ./.env || . ../.env
 
+if [ "${USE_HELM}" = "true" ]; then
+    "${ROOT_DIR}"/operations/configure-ingress-nginx-helm.sh
+    exit $?
+fi
+
 # Download the Azure ingress-nginx deployment (see: https://kubernetes.github.io/ingress-nginx/deploy/#azure)
 log Downloading Ingress NGINX YAML
 curl -o "${INGRESS_NGINX_YAML}" https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.13.3/deploy/static/provider/cloud/deploy.yaml

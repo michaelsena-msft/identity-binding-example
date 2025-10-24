@@ -3,22 +3,31 @@ set -eou pipefail
 [ -f ./.env ] && . ./.env || . ../.env
 
 if [ "${MODE}" = "ingress-nginx" ]; then
-    DEFAULT_LABEL=${DEFAULT_INGRESS_NGINX_LABEL}
-    ALT_LABEL=$(echo ${DEFAULT_LABEL} | sed -e "s/registry.k8s.io/${ACR_FQDN}/g; s/@.\+//g")
+    REGISTRY=${DEFAULT_INGRESS_NGINX_REGISTRY}
+    IMAGE=${DEFAULT_INGRESS_NGINX_IMAGE}
+    TAG=${DEFAULT_INGRESS_NGINX_TAG}
+    DIGEST=${DEFAULT_INGRESS_NGINX_DIGEST}
 elif [ "${MODE}" = "nginx-ingress" ]; then
-    DEFAULT_LABEL="${DEFAULT_NGINX_INGRESS_REPOSITORY}:${DEFAULT_NGINX_INGRESS_TAG}"
-    ALT_LABEL=${ACR_FQDN}/${DEFAULT_NGINX_INGRESS_REPOSITORY}:${DEFAULT_NGINX_INGRESS_TAG}
+    REGISTRY=${DEFAULT_NGINX_INGRESS_REGISTRY}
+    IMAGE=${DEFAULT_NGINX_INGRESS_IMAGE}
+    TAG=${DEFAULT_NGINX_INGRESS_TAG}
+    DIGEST=${DEFAULT_NGINX_INGRESS_DIGEST}
 fi
 
-log Pulling default image ${DEFAULT_LABEL}
-docker pull ${DEFAULT_LABEL}
-    
-log Tagging ${DEFAULT_LABEL} as ${ALT_LABEL}
-docker tag ${DEFAULT_LABEL} ${ALT_LABEL}
-    
-log Pushing ${ALT_LABEL} to ACR
-docker push ${ALT_LABEL}
+SOURCE=${REGISTRY}/${IMAGE}:${TAG}@${DIGEST}
+TARGET=${ACR_FQDN}/${IMAGE}:${TAG}
 
-./operations/configure-${MODE}.sh ${ALT_LABEL}
+log Pulling default image ${SOURCE}
+docker pull ${SOURCE}
+
+log Tagging ${SOURCE} as ${TARGET}
+docker tag ${SOURCE} ${TARGET}
+    
+log Pushing ${TARGET} to ACR
+docker push ${TARGET}
+
+export DIGEST=$(digest ${IMAGE}:${TAG})
+info Digest: ${DIGEST}
+REGISTRY=${ACR_FQDN} PULL_POLICY=Always ./operations/configure-${MODE}.sh
 
 ./operations/verify.sh

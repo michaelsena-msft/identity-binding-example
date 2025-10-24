@@ -2,31 +2,35 @@
 set -eou pipefail
 [ -f ./.env ] && . ./.env || . ../.env
 
-DALEC_REPOSITORY="${MODE}-alt"
+export REGISTRY=${ACR_FQDN}
+export IMAGE="${MODE}-alt"
+export PULL_POLICY=Always
 
-if ! docker image ls -f "reference=controller-alt" 2> /dev/null; then
+if ! docker image ls -f "reference=${IMAGE}" 2>&1 > /dev/null; then
     echo "No custom Ingress Controller with DALEC image found." >&2
     exit 1
 fi
 
-DALEC_TAG=$(docker image ls -f "reference=${DALEC_REPOSITORY}" --format "{{.Tag}}" | head -n 1)
-info Found DALEC image: ${DALEC_REPOSITORY}:${DALEC_TAG}
+export TAG=$(docker image ls -f "reference=${IMAGE}" | tail -1 | awk '{print $2}')
+SOURCE=${IMAGE}:${TAG}
+TARGET=${ACR_FQDN}/${IMAGE}:${TAG}
 
-# Push the Dalec image
-ACR_DALEC_LABEL=${ACR_FQDN}/${DALEC_REPOSITORY}:${DALEC_TAG}
-docker tag ${DALEC_REPOSITORY}:${DALEC_TAG} ${ACR_DALEC_LABEL}
-info Tagged ${DALEC_REPOSITORY}:${DALEC_TAG} as ${ACR_DALEC_LABEL}
+log Tagging ${SOURCE} as ${TARGET}
+docker tag ${SOURCE} ${TARGET}
 
-log Pushing ${ACR_DALEC_LABEL} to ACR
-docker push ${ACR_DALEC_LABEL}
+log Pushing ${TARGET} to ACR
+docker push ${TARGET}
+
+export DIGEST=$(digest ${IMAGE}:${TAG})
+info Digest: ${DIGEST}
 
 # Change to using the dalec image.
 if [ "${MODE}" = "ingress-nginx" ]; then
-    export RUN_AS_GROUP=1000
-    export RUN_AS_USER=1000
+    export RUN_AS_GROUP=0
+    export RUN_AS_USER=0
+    export RUN_AS_NONROOT=false
 fi
 
-./operations/configure-${MODE}.sh ${ACR_DALEC_LABEL} ${DALEC_TAG} Always
+./operations/configure-${MODE}.sh
 
-# Verify its still working
 ./operations/verify.sh
