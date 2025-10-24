@@ -3,7 +3,7 @@ set -eou pipefail
 [ -f ./.env ] && . ./.env || . ../.env
 
 export REGISTRY=${ACR_FQDN}
-export IMAGE="${MODE}-alt"
+export IMAGE="ingress-nginx-alt"
 export PULL_POLICY=Always
 
 if ! docker image ls -f "reference=${IMAGE}" 2>&1 > /dev/null; then
@@ -25,12 +25,6 @@ export DIGEST=$(digest ${IMAGE}:${TAG})
 info Digest: ${DIGEST}
 
 # Change to using the dalec image.
-if [ "${MODE}" = "ingress-nginx" ]; then
-    export RUN_AS_GROUP=0
-    export RUN_AS_USER=0
-    export RUN_AS_NONROOT=false
-fi
-
-./operations/configure-${MODE}.sh
+RUN_AS_GROUP=0 RUN_AS_USER=0 RUN_AS_NONROOT=false ./operations/configure.sh
 
 ./operations/verify.sh
