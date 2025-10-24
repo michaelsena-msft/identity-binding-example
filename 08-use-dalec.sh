@@ -7,7 +7,7 @@ export IMAGE="ingress-nginx-alt"
 export PULL_POLICY=Always
 
 if ! docker image ls -f "reference=${IMAGE}" 2>&1 > /dev/null; then
-    echo "No custom Ingress Controller with DALEC image found." >&2
+    echo "No custom Ingress Controller with DALEC image found. Run: build-dalec.sh" >&2
     exit 1
 fi
 
