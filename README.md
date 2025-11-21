@@ -1,4 +1,4 @@
-# Basic AKS Cluster with NGINX Example
+# Basic AKS Cluster that creates a Workload Identity
 
 ## Preparation
 
