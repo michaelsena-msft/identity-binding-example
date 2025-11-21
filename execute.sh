@@ -5,8 +5,14 @@ set -eou pipefail
 log -- Step 1: Creating AKS cluster
 ./01-create-aks.sh
 
-log -- Step 2: Build the image
-./02-deploy.sh
+log -- Step 2: Setting a secret in Key Vault
+./02-secret.sh
 
-log -- Step 3: Apply the deployment
-./03-planet.sh
+log -- Step 3: Build the image
+./03-deploy.sh
+
+log -- Step 4: Apply the deployment
+./04-planet.sh
+
+log -- Step 5: Verify everything is good.
+./05-verify.sh
