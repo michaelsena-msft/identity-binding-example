@@ -7,8 +7,5 @@ k config delete-context "$CLUSTER" || true
 k config delete-cluster "$CLUSTER" || true
 k config unset "users.clusterUser_${RESOURCE_GROUP}_${CLUSTER}" || true
 
-# Docker ACR clean-up.
-docker logout ${ACR_FQDN}
-
 # Add --no-wait if you really want.
 az group delete -n "$RESOURCE_GROUP" --yes $@

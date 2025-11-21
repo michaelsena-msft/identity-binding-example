@@ -3,7 +3,8 @@ set -eou pipefail
 . $(dirname $(realpath $0))/.env
 
 log Applying planet
-k apply -f 02-planet.yaml
+export IDENTITY_CLIENT_ID=$(az identity show -g "${RESOURCE_GROUP}" --name "${IDENTITY}" | jq -r '.clientId')
+envsubst < 02-planet.yaml | k apply -f -
 
 log Waiting for the rollout to complete
 k -n web rollout status deploy/planet --timeout=120s

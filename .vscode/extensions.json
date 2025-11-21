@@ -4,6 +4,7 @@
         "ms-vscode.vscode-node-azure-pack",
         "ms-azuretools.vscode-azure-mcp-server",
         "redhat.vscode-yaml",
-        "ms-azuretools.vscode-docker"
+        "ms-azuretools.vscode-docker",
+        "golang.go"
     ]
 }
