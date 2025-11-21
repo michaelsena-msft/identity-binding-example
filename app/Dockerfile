@@ -10,11 +10,13 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -gcflags "all=-N -l" -o identity-example .
 
 # Final image
-FROM debian:bookworm-slim
+FROM gcr.io/distroless/base-debian12
 
 WORKDIR /app
 COPY --from=builder /app/identity-example /app/identity-example
 
 EXPOSE 8080
+
+USER nonroot:nonroot
 
 ENTRYPOINT ["/app/identity-example"]

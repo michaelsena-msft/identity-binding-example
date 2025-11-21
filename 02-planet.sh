@@ -4,6 +4,7 @@ set -eou pipefail
 
 log Applying planet
 export IDENTITY_CLIENT_ID=$(az identity show -g "${RESOURCE_GROUP}" --name "${IDENTITY}" | jq -r '.clientId')
+export KEYVAULT_URL=$(az keyvault show -g "${RESOURCE_GROUP}" -n "${KEY_VAULT}" | jq -r '.properties.vaultUri')
 envsubst < 02-planet.yaml | k apply -f -
 
 log Waiting for the rollout to complete

@@ -13,10 +13,26 @@ spec:
   selector: { matchLabels: { app: planet } }
   template:
     metadata:
-      labels: { app: planet }
+      labels: 
+        app: planet
+        azure.workload.identity/use: "true"
     spec:
       serviceAccountName: astronomer-serviceaccount
       containers:
+        - image: ghcr.io/azure/azure-workload-identity/msal-go
+          name: oidc
+          env:
+            - name: KEYVAULT_URL
+              value: ${KEYVAULT_URL}
+            - name: SECRET_NAME
+              value: ${SECRET_NAME}
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
         - name: identity-example
           image: ${ACR_FQDN}/identity-example:latest
           imagePullPolicy: Always
@@ -24,9 +40,9 @@ spec:
             - containerPort: 8080
           env:
             - name: KEY_VAULT_URL
-              value: "https://sena-ingressnginx-kv.vault.azure.net/"
+              value: ${KEYVAULT_URL}
             - name: SECRET_NAME
-              value: "example-secret"
+              value: ${SECRET_NAME}
             - name: INTERVAL
               value: "10s"
           resources:

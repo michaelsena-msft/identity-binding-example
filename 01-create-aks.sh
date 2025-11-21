@@ -15,16 +15,6 @@ else
   info Resource group ${RESOURCE_GROUP} already exists, skipping creation
 fi
 
-if ! az identity list -o table | grep -q ${IDENTITY}; then
-  log Creating an identity
-  az identity create \
-    --name ${IDENTITY} \
-    --resource-group "${RESOURCE_GROUP}" \
-    -o table
-else
-  info Identity ${IDENTITY} already exists, skipping creation.
-fi
-
 if ! az acr list -o table | grep -q ${ACR_NAME}; then
   log Creating the ACR
   az acr create \
@@ -47,6 +37,8 @@ if ! az keyvault list -o table | grep -q ${KEY_VAULT}; then
     --name "$KEY_VAULT" \
     --sku standard \
     --only-show-errors \
+    --enable-rbac-authorization \
+    --enable-purge-protection \
     -o table
 else
   info KeyVault ${KEY_VAULT} already exists, skipping creation
@@ -57,30 +49,45 @@ if ! az aks list -o table | grep -q ${CLUSTER}; then
   az aks create \
     -g "$RESOURCE_GROUP" -n "$CLUSTER" \
     --location "$REGION" \
-    --enable-managed-identity \
     --node-count 1 \
     --node-vm-size Standard_D4s_v3 \
     --attach-acr $ACR_NAME \
     --only-show-errors \
     --enable-oidc-issuer \
+    --enable-workload-identity \
     -o table
 else
   info Cluster ${CLUSTER} already exists, skipping creation
 fi
 
+if ! az identity list -o table | grep -q ${IDENTITY}; then
+  log Creating an identity
+  az identity create \
+    --name ${IDENTITY} \
+    --resource-group "${RESOURCE_GROUP}" \
+    -o table
+else
+  info Identity ${IDENTITY} already exists, skipping creation.
+fi
+
 if ! az identity federated-credential list -g "${RESOURCE_GROUP}" --identity-name "${IDENTITY}" | grep -q ${FIC_IDENTITY}; then
   log Creating federated identity credential
-  ISSUER_URL=$(az aks show -g sena-ingressnginx -n sena-ingressnginx-aks | jq -r '.oidcIssuerProfile.issuerUrl')
+  ISSUER_URL=$(az aks show -g "${RESOURCE_GROUP}" -n "${CLUSTER}" | jq -r '.oidcIssuerProfile.issuerUrl')
   log Issuer URL: ${ISSUER_URL}
   az identity federated-credential create \
     --name "${FIC_IDENTITY}" \
     --identity-name "${IDENTITY}" \
     --resource-group "${RESOURCE_GROUP}" \
     --issuer "${ISSUER_URL}" \
-    --subject system:serviceaccount:web:astronomer-serviceaccount
+    --subject system:serviceaccount:web:astronomer-serviceaccount \
+    --audience api://AzureADTokenExchange
 else
   info Federated identity credential ${FIC_IDENTITY} already exists, skipping creation.
 fi
+
+# Check role assignments.
+IDENTITY_PRINCIPAL=$(az identity show -g ${RESOURCE_GROUP} --name ${IDENTITY} | jq -r '.principalId')
+log Ensure ${KEY_VAULT} has a role assignment 'Key Vault Secrets User' for ${IDENTITY_PRINCIPAL}
 
 # Setup environment.
 ./local-env.sh
