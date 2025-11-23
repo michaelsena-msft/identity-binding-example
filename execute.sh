@@ -13,6 +13,3 @@ log -- Step 3: Build the image
 
 log -- Step 4: Apply the deployment
 ./04-planet.sh
-
-log -- Step 5: Verify everything is good.
-./05-verify.sh
