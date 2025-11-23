@@ -6,20 +6,20 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: planet
+  name: ${DEPLOYMENT}
   namespace: ${NAMESPACE}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: planet
+      app: ${DEPLOYMENT}
   template:
     metadata:
       labels: 
-        app: planet
+        app: ${DEPLOYMENT}
         azure.workload.identity/use: "true"
     spec:
-      serviceAccountName: astronomer-serviceaccount
+      serviceAccountName: ${DEPLOYMENT}-serviceaccount
       containers:
         - image: ghcr.io/azure/azure-workload-identity/msal-go
           name: oidc
@@ -58,7 +58,7 @@ spec:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: astronomer-serviceaccount
+  name: ${DEPLOYMENT}-serviceaccount
   namespace: ${NAMESPACE}
   annotations:
     azure.workload.identity/client-id: ${IDENTITY_CLIENT_ID}

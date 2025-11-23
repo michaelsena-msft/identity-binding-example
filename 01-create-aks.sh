@@ -4,10 +4,10 @@ set -eou pipefail
 
 if false; then
   if ! az extension show --name aks-preview -o table --only-show-errors > /dev/null; then
-    log Installing the aks-preview extension
+    info Installing the aks-preview extension
     az extension add --name aks-preview --only-show-errors
   else
-    log Ensuring latest aks-preview extension is installed
+    info Ensuring latest aks-preview extension is installed
     az extension update --name aks-preview --only-show-errors
   fi
 fi
@@ -18,7 +18,7 @@ isRegistered() {
 }
 
 if ! isRegistered; then
-  log Registering the IdentityBindingPreview feature
+  info Registering the IdentityBindingPreview feature
   az feature register --namespace Microsoft.ContainerService --name IdentityBindingPreview --only-show-errors -o table
   while ! isRegistered; do
     log Waiting for feature registration to complete...

@@ -11,5 +11,5 @@ log -- Step 2: Setting a secret in Key Vault
 log -- Step 3: Build the image
 ./03-deploy.sh
 
-log -- Step 4: Apply the deployment
-./04-planet.sh
+log -- Step 4: Add a deployment showing basic workload identity
+./04-basic-wi.sh
