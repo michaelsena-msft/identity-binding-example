@@ -13,3 +13,8 @@ log -- Step 3: Build the image
 
 log -- Step 4: Add a deployment showing basic workload identity
 ./04-basic-wi.sh
+
+log -- Step 5: Add a deployment showing identity binding
+./05-ib.sh
+
+log -- All steps completed successfully

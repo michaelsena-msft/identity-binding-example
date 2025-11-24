@@ -55,12 +55,33 @@ spec:
       serviceAccountName: ${DEPLOYMENT}-serviceaccount
       containers:
         - image: ghcr.io/bahe-msft/azure-workload-identity/identitybinding-msal-go:latest-linux-amd64
-          name: oidc
+          name: sdk-example
           env:
             - name: KEYVAULT_URL
               value: ${KEYVAULT_URL}
             - name: SECRET_NAME
               value: ${SECRET_NAME}
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+        - name: identity-example
+          image: ${ACR_FQDN}/identity-example:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: KEY_VAULT_URL
+              value: ${KEYVAULT_URL}
+            - name: SECRET_NAME
+              value: ${SECRET_NAME}
+            - name: ENABLE_AZURE_TOKEN_PROXY
+              value: "true"
+            - name: INTERVAL
+              value: "1m"
           resources:
             requests:
               cpu: "100m"

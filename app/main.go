@@ -14,15 +14,17 @@ import (
 )
 
 type Credentials struct {
-	keyVaultUrl string
-	secretName  string
+	keyVaultUrl      string
+	secretName       string
+	enableTokenProxy bool
 }
 
 func main() {
 	// Check key vault has been specified.
 	credentials := Credentials{
-		keyVaultUrl: os.Getenv("KEY_VAULT_URL"),
-		secretName:  os.Getenv("SECRET_NAME"),
+		keyVaultUrl:      os.Getenv("KEY_VAULT_URL"),
+		secretName:       os.Getenv("SECRET_NAME"),
+		enableTokenProxy: os.Getenv("ENABLE_AZURE_TOKEN_PROXY") == "true",
 	}
 
 	if credentials.keyVaultUrl == "" || credentials.secretName == "" {
@@ -40,7 +42,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	klog.InfoS("Starting main loop.", "interval", duration)
+	klog.InfoS("Starting main loop.", "interval", duration, "enableTokenProxy", credentials.enableTokenProxy)
 	check(credentials)
 
 	sigCh := make(chan os.Signal, 1)
@@ -71,7 +73,11 @@ func main() {
 func check(credentials Credentials) {
 	klog.Info("Looking up our secret value.")
 
-	credential, err := azidentity.NewDefaultAzureCredential(nil)
+	options := azidentity.WorkloadIdentityCredentialOptions{
+		EnableAzureTokenProxy: credentials.enableTokenProxy,
+	}
+
+	credential, err := azidentity.NewWorkloadIdentityCredential(&options)
 	if err != nil {
 		klog.ErrorS(err, "Failed to obtain a credential.")
 		return

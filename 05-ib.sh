@@ -10,7 +10,12 @@ export IB_IDENTITY="${IDENTITY}-ib"
 export IDENTITY_CLIENT_ID=$(identityClientId)
 export KEYVAULT_URL=$(keyvaultUrl)
 
-log Checking the identity binding
+if [ $# = 1 ] && [ $1 = "redeploy" ]; then
+  log Deleting existing deployment
+  k -n ${NAMESPACE} delete deploy/${DEPLOYMENT} --ignore-not-found=true
+fi
+
+log Checking the identity binding 
 if ! az aks identity-binding list -g "${RESOURCE_GROUP}" --cluster-name "${CLUSTER}" --only-show-errors -o table | grep -q "${IB_IDENTITY}"; then
   info Identity binding ${IB_IDENTITY} does not exist, creating.
   az aks identity-binding create \
@@ -29,11 +34,18 @@ envsubst < 05-ib.yaml | k apply -f -
 k -n ${NAMESPACE} rollout status deploy/${DEPLOYMENT} --timeout=120s
 k -n ${NAMESPACE} get pods -l app=${DEPLOYMENT} -o wide
 
-log Allow some time for the pods to initialize and perform OIDC authentication
-sleep 30
+log Allow time for the SDK example to attempt token retrieval.
+sleep 45
 
-info Verifying OIDC Container
-if ! k logs -n ${NAMESPACE} -l app=${DEPLOYMENT} -c oidc | tail -1 | grep 'successfully got secret' > /dev/null; then
-    echo "OIDC authentication failed for oidc container" >&2
+log Verifying SDK example
+if ! k logs -n ${NAMESPACE} -l app=${DEPLOYMENT} -c sdk-example | tail -1 | grep 'successfully got secret' > /dev/null; then
+    echo "Authentication failing for SDK example" >&2
     exit 1
 fi
+
+log Verifying our application
+if ! k logs -n ${NAMESPACE} -l app=${DEPLOYMENT} -c identity-example | tail -2 | grep 'Retrieved secret' > /dev/null; then
+    echo "Authentication failing for our application" >&2
+    exit 1
+fi
+
