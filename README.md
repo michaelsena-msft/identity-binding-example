@@ -1,4 +1,6 @@
-# Basic AKS Cluster that creates a Workload Identity
+# Identity Bindings Example
+
+Creates a set of Azure resources to demonstrate workload identity, and the new identity bindings.
 
 ## Preparation
 
@@ -27,12 +29,4 @@ Before running, execute:
 
 ```shell
 source .env
-```
-
-## Ingress NGINX Parameters
-
-To see all possible overrides:
-
-```shell
-helm show values ingress-nginx --repo https://kubernetes.github.io/ingress-nginx
 ```

@@ -33,7 +33,7 @@ az identity federated-credential ${verb} \
 log Applying K8s YAML
 export IDENTITY_CLIENT_ID=$(identityClientId)
 export KEYVAULT_URL=$(keyvaultUrl)
-envsubst < 04-basic-wi.yaml | k apply -f -
+envsubst < 04-wi.yaml | k apply -f -
 k -n ${NAMESPACE} rollout status deploy/${DEPLOYMENT} --timeout=120s
 k -n ${NAMESPACE} get pods -l app=${DEPLOYMENT} -o wide
 
