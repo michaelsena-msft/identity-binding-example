@@ -90,7 +90,8 @@ log "[ManualAction]" 2. Ensure ${KEY_VAULT} has a role assignment 'Key Vault Sec
 if ! az aks list -o table | grep -q ${CLUSTER}; then
   log Creating the cluster
   az aks create \
-    -g "$RESOURCE_GROUP" -n "$CLUSTER" \
+    -g "$RESOURCE_GROUP" \
+    -n "${CLUSTER}" \
     --location "$REGION" \
     --node-count 1 \
     --node-vm-size Standard_D4s_v3 \
@@ -102,6 +103,24 @@ if ! az aks list -o table | grep -q ${CLUSTER}; then
     -o table
 else
   info Cluster ${CLUSTER} already exists, skipping creation
+fi
+
+if ! az aks list -o table | grep -q ${ALT_CLUSTER}; then
+  log Creating the alt cluster
+  az aks create \
+    -g "$RESOURCE_GROUP" \
+    -n "${ALT_CLUSTER}" \
+    --location "$REGION" \
+    --node-count 1 \
+    --node-vm-size Standard_D4s_v3 \
+    --attach-acr $ACR_NAME \
+    --only-show-errors \
+    --no-ssh-key \
+    --enable-oidc-issuer \
+    --enable-workload-identity \
+    -o table
+else
+  info Cluster ${ALT_CLUSTER} already exists, skipping creation
 fi
 
 # Setup environment.
