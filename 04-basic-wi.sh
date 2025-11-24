@@ -4,6 +4,7 @@ set -eou pipefail
 
 export NAMESPACE=demo-basic-wi
 export DEPLOYMENT=basic
+FIC_IDENTITY=${RESOURCE_GROUP}-fic
 
 if ! az identity federated-credential list -g "${RESOURCE_GROUP}" --identity-name "${IDENTITY}" | grep -q ${FIC_IDENTITY}; then
   log Creating federated identity credential
@@ -23,13 +24,13 @@ else
 fi
 
 log Applying K8s YAML
-export IDENTITY_CLIENT_ID=$(az identity show -g "${RESOURCE_GROUP}" --name "${IDENTITY}" | jq -r '.clientId')
+export IDENTITY_CLIENT_ID=$(identityClientId)
 export KEYVAULT_URL=$(keyvaultUrl)
 envsubst < 04-basic-wi.yaml | k apply -f -
 k -n ${NAMESPACE} rollout status deploy/${DEPLOYMENT} --timeout=120s
 k -n ${NAMESPACE} get pods -l app=${DEPLOYMENT} -o wide
 
-info Allow some time for the pods to initialize and perform OIDC authentication
+log Allow some time for the pods to initialize and perform OIDC authentication
 sleep 30
 
 info Verifying OIDC Container
