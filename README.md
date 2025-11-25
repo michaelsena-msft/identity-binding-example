@@ -30,3 +30,14 @@ Before running, execute:
 ```shell
 source .env
 ```
+
+## Go: app
+
+In the `app` directory is a simple Go application that uses the Azure SDK to verify whether workload identity / identity bindings are working.
+
+## Go: client
+
+In the `client` directory is a simple Go application that can create, list or delete identity bindings.
+Parameters are provided via environment variables, specified in the `main.go` file.
+
+This was based off an [Azure SDK Example](https://github.com/Azure/azure-sdk-for-go/blob/main/sdk/resourcemanager/containerservice/armcontainerservice/identitybindings_client_example_test.go) for identity bindings.
